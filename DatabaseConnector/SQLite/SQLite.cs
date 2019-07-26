@@ -375,5 +375,10 @@ namespace PMDCP.DatabaseConnector.SQLite
         public bool IsTransactionActive {
             get { throw new NotImplementedException(); }
         }
+
+        public void AddRow(string tableName, IEnumerable<IGenericDataColumn> columns, object data)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

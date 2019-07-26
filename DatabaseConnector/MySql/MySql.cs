@@ -798,5 +798,64 @@ namespace PMDCP.DatabaseConnector.MySql
                 return null;
             }
         }
+
+        public void AddRow(string tableName, IEnumerable<IGenericDataColumn> columns, object data)
+        {
+            bool localConnection = false;
+            if (ConnectionState == System.Data.ConnectionState.Closed)
+            {
+                localConnection = true;
+                OpenConnection();
+            }
+            try
+            {
+                var columnsList = new List<IGenericDataColumn>(columns);
+
+                var queryBuilder = new StringBuilder();
+                queryBuilder.Append("INSERT INTO ");
+                queryBuilder.Append(tableName);
+                queryBuilder.Append(" ");
+
+                var enumerator = columnsList.GetEnumerator();
+                // If the enumerable is empty, exit right away - no columns to add
+                if (!enumerator.MoveNext())
+                {
+                    return;
+                }
+
+                queryBuilder.Append("(");
+                queryBuilder.Append(enumerator.Current.Name);
+
+                while (enumerator.MoveNext())
+                {
+                    queryBuilder.Append(", ");
+                    queryBuilder.Append(enumerator.Current.Name);
+                }
+
+                queryBuilder.Append(") VALUES (");
+
+                enumerator = columnsList.GetEnumerator();
+                queryBuilder.Append("@");
+                queryBuilder.Append(enumerator.Current.Name);
+
+                while (enumerator.MoveNext())
+                {
+                    queryBuilder.Append(", ");
+                    queryBuilder.Append("@");
+                    queryBuilder.Append(enumerator.Current.Name);
+                }
+
+                queryBuilder.Append(")");
+
+                connection.Execute(queryBuilder.ToString(), data, SelectTransaction(localConnection));
+            }
+            finally
+            {
+                if (localConnection)
+                {
+                    CloseConnection();
+                }
+            }
+        }
     }
 }
