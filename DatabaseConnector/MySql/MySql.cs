@@ -835,6 +835,12 @@ namespace PMDCP.DatabaseConnector.MySql
                 queryBuilder.Append(") VALUES (");
 
                 enumerator = columnsList.GetEnumerator();
+                // If the enumerable is empty, exit right away - no columns to add
+                if (!enumerator.MoveNext())
+                {
+                    return;
+                }
+                
                 queryBuilder.Append("@");
                 queryBuilder.Append(enumerator.Current.Name);
 
