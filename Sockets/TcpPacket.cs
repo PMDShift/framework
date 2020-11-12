@@ -111,6 +111,10 @@ namespace PMDCP.Sockets
             sendableClass.AppendToPacket(this);
         }
 
+        public void AppendParameter(bool parameter) {
+            AppendParameter(parameter ? "1" : "0");
+        }
+
         public void AppendParameter(int parameter) {
             if (string.IsNullOrEmpty(this.header)) {
                 header = parameter.ToString();
